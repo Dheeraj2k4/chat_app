@@ -45,14 +45,14 @@ export default function BottomTabNavigator() {
         name="ChatList"
         component={ChatScreen}
         options={{
-          tabBarIcon: ({ focused }) => <ChatIcon focused={focused} />,
+          tabBarIcon: ({ focused }) => <ChatIcon focused={focused} />, animation: "shift"
         }}
       />
       <Tab.Screen
         name="Bookmarks"
         component={BookmarksScreen}
         options={{
-          tabBarIcon: ({ focused }) => <BookmarksIcon focused={focused} />,
+          tabBarIcon: ({ focused }) => <BookmarksIcon focused={focused} />, animation:'shift'
         }}
       />
     </Tab.Navigator>
