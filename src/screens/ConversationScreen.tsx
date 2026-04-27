@@ -6,15 +6,17 @@ import {
   StyleSheet,
   Pressable,
   StatusBar,
+  KeyboardAvoidingView,
+  Platform,
   ListRenderItem,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
 import Typography, { FontFamily } from '../constants/typography';
-import { Spacing, Radius } from '../constants/theme';
+import { Spacing } from '../constants/theme';
 import Avatar from '../components/Common/Avatar';
 import MessageBubble from '../components/ConversationScreen/MessageBubble';
 import MessageInput from '../components/ConversationScreen/MessageInput';
@@ -42,7 +44,7 @@ export default function ConversationScreen() {
   // Scroll to bottom on new messages
   useEffect(() => {
     if (messages.length > 0) {
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 80);
     }
   }, [messages.length]);
 
@@ -57,17 +59,16 @@ export default function ConversationScreen() {
   if (!contact) return null;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    // SafeAreaView only handles top; bottom is handled by KeyboardAvoidingView + input
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
 
       {/* ── Header ── */}
       <View style={styles.header}>
-        {/* Back */}
         <Pressable style={styles.backBtn} onPress={() => navigation.goBack()} hitSlop={10}>
           <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
         </Pressable>
 
-        {/* Avatar + Name — centred */}
         <View style={styles.headerCenter}>
           <Avatar
             name={contact.name}
@@ -81,7 +82,6 @@ export default function ConversationScreen() {
           </Text>
         </View>
 
-        {/* Action icons */}
         <View style={styles.headerActions}>
           <Pressable
             hitSlop={10}
@@ -103,21 +103,32 @@ export default function ConversationScreen() {
         </View>
       </View>
 
-      {/* ── Messages ── */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={() =>
-          flatListRef.current?.scrollToEnd({ animated: false })
-        }
-      />
+      {/* ── Keyboard-aware body ── */}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
+      >
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          // Scroll to bottom when keyboard opens and layout changes
+          onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: true })
+          }
+          // Let the list shrink when keyboard is visible
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+        />
 
-      {/* ── Input ── */}
-      <MessageInput onSend={handleSend} />
+        <MessageInput onSend={handleSend} />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -126,6 +137,9 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: Colors.white,
+  },
+  flex: {
+    flex: 1,
   },
 
   // ── Header ──────────────────────────────────────────
@@ -173,5 +187,8 @@ const styles = StyleSheet.create({
   // ── Messages ─────────────────────────────────────────
   listContent: {
     paddingVertical: Spacing.md,
+    flexGrow: 1,
+    justifyContent: 'flex-end',
   },
 });
+

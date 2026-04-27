@@ -16,6 +16,7 @@ export interface Message {
   fileName?: string;
   timestamp: number; // unix ms
   read: boolean;
+  status?: 'sending' | 'sent' | 'delivered' | 'read'; // outgoing only
 }
 
 export interface Conversation {
@@ -44,15 +45,19 @@ export type ChatAction =
       type: 'SIMULATE_REPLY';
       payload: { conversationId: string; contactId: string };
     }
-  | { type: 'TOGGLE_BOOKMARK'; payload: { conversationId: string } };
+  | { type: 'TOGGLE_BOOKMARK'; payload: { conversationId: string } }
+  | {
+      type: 'SET_MESSAGE_STATUS';
+      payload: { messageId: string; conversationId: string; status: NonNullable<Message['status']> };
+    };
 
 export type RootStackParamList = {
   MainTabs: undefined;
   Conversation: { conversationId: string; contactId: string };
+  SelectContact: undefined;
 };
 
 export type MainTabParamList = {
   ChatList: undefined;
-  Contacts: undefined;
   Bookmarks: undefined;
 };

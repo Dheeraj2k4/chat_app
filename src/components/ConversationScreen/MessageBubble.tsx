@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants';
 import { FontFamily } from '../../constants/typography';
 import { Message, Contact } from '../../types';
@@ -27,6 +27,26 @@ function formatTime(ts: number): string {
   return `${day} ${h}.${m}`;
 }
 
+// WhatsApp-style tick indicator
+function TickIndicator({ status }: { status?: Message['status'] }) {
+  if (!status) return null;
+
+  if (status === 'sending') {
+    // Clock / pending
+    return <Ionicons name="time-outline" size={13} color={Colors.textMuted} style={styles.tick} />;
+  }
+  if (status === 'sent') {
+    // Single grey tick
+    return <Ionicons name="checkmark" size={14} color={Colors.textMuted} style={styles.tick} />;
+  }
+  if (status === 'delivered') {
+    // Double grey tick
+    return <Ionicons name="checkmark-done" size={14} color={Colors.textMuted} style={styles.tick} />;
+  }
+  // read — double orange tick
+  return <Ionicons name="checkmark-done" size={14} color={Colors.primary} style={styles.tick} />;
+}
+
 export default function MessageBubble({ message, contact }: Props) {
   const isMe = message.senderId === CURRENT_USER_ID;
   const timeLabel = formatTime(message.timestamp);
@@ -35,8 +55,9 @@ export default function MessageBubble({ message, contact }: Props) {
     // ── Outgoing: [timestamp left] [bubble] [my avatar right] ──
     return (
       <View style={styles.rowMe}>
-        {/* timestamp floats left of the bubble */}
+        {/* timestamp + tick outside bubble, bottom-right */}
         <Text style={styles.tsLeft}>{timeLabel}</Text>
+        <TickIndicator status={message.status} />
 
         <View style={styles.bubbleMe}>
           {message.imageUri ? (
@@ -106,6 +127,11 @@ const TS_STYLE = {
 };
 
 const styles = StyleSheet.create({
+  tick: {
+    alignSelf: 'flex-end' as const,
+    marginBottom: 4,
+  },
+
   // ── Outgoing row ──────────────────────────────────────
   rowMe: {
     flexDirection: 'row',

@@ -7,13 +7,10 @@ import {
   Pressable,
   StatusBar,
 } from 'react-native';
-// Text kept for title — icons use react-native-vector-icons
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
-import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
 import Typography, { FontFamily } from '../constants/typography';
@@ -110,7 +107,7 @@ export default function ChatScreen() {
       {/* ── FAB ── */}
       <Pressable
         style={({ pressed }) => [styles.fab, pressed && { opacity: 0.85 }]}
-        onPress={() => navigation.navigate('MainTabs' as any)}
+        onPress={() => navigation.navigate('SelectContact')}
       >
         <Entypo name="paper-plane" size={24} color={Colors.white} />
       </Pressable>

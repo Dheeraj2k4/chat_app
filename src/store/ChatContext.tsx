@@ -91,6 +91,23 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       };
     }
 
+    case 'SET_MESSAGE_STATUS': {
+      const { messageId, conversationId, status } = action.payload;
+      return {
+        ...state,
+        conversations: state.conversations.map((conv) =>
+          conv.id === conversationId
+            ? {
+                ...conv,
+                messages: conv.messages.map((m) =>
+                  m.id === messageId ? { ...m, status, read: status === 'read' } : m
+                ),
+              }
+            : conv
+        ),
+      };
+    }
+
     default:
       return state;
   }
@@ -169,18 +186,30 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       imageUri?: string,
       fileName?: string
     ) => {
+      const msgId = `msg_${Date.now()}`;
       const message: Omit<Message, 'conversationId'> = {
-        id: `msg_${Date.now()}`,
+        id: msgId,
         senderId: CURRENT_USER_ID,
         text,
         imageUri,
         fileName,
         timestamp: Date.now(),
-        read: true,
+        read: false,
+        status: 'sending',
       };
       dispatch({ type: 'SEND_MESSAGE', payload: { conversationId, message } });
 
-      // Simulate reply after 1.5–3s
+      // sending → sent after 300ms
+      setTimeout(() => {
+        dispatch({ type: 'SET_MESSAGE_STATUS', payload: { messageId: msgId, conversationId, status: 'sent' } });
+      }, 300);
+
+      // sent → delivered after 900ms
+      setTimeout(() => {
+        dispatch({ type: 'SET_MESSAGE_STATUS', payload: { messageId: msgId, conversationId, status: 'delivered' } });
+      }, 900);
+
+      // Simulate reply after 1.5–3s; on reply arrival mark our message as read
       const contactId = state.conversations.find(
         (c) => c.id === conversationId
       )?.contactId;
@@ -188,6 +217,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         const delay = 1500 + Math.random() * 1500;
         setTimeout(() => {
           dispatch({ type: 'SIMULATE_REPLY', payload: { conversationId, contactId } });
+          dispatch({ type: 'SET_MESSAGE_STATUS', payload: { messageId: msgId, conversationId, status: 'read' } });
         }, delay);
       }
     },
@@ -196,6 +226,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
   const markRead = useCallback((conversationId: string) => {
     dispatch({ type: 'MARK_READ', payload: { conversationId } });
+    // Also mark all our outgoing messages in this conv as read
+    // (the other person "opened" it)
   }, []);
 
   const toggleBookmark = useCallback((conversationId: string) => {

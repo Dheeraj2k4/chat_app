@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { View, TextInput, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants';
 import { FontFamily, FontSize } from '../../constants/typography';
 import { Spacing, Radius } from '../../constants/theme';
@@ -17,7 +18,7 @@ export default function SearchBar({
 }: SearchBarProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>??</Text>
+      <Ionicons name="search" size={16} color={Colors.textMuted} style={styles.icon} />
       <TextInput
         style={styles.input}
         value={value}

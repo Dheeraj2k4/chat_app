@@ -3,9 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import BottomTabNavigator from './BottomTabNavigator';
 import { RootStackParamList } from '../types';
-
-// ConversationScreen is lazy-imported so it only loads when navigated to
 import ConversationScreen from '../screens/ConversationScreen';
+import ContactsScreen from '../screens/ContactsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,6 +16,11 @@ export default function RootNavigator() {
         name="Conversation"
         component={ConversationScreen}
         options={{ animation: 'slide_from_right' }}
+      />
+      <Stack.Screen
+        name="SelectContact"
+        component={ContactsScreen}
+        options={{ animation: 'slide_from_bottom' }}
       />
     </Stack.Navigator>
   );

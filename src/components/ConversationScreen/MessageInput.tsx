@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Pressable, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
+import { Ionicons, Entypo } from '@expo/vector-icons';
 import { Colors } from '../../constants';
 import { FontFamily, FontSize } from '../../constants/typography';
 import { Spacing, Radius, Shadow } from '../../constants/theme';
@@ -10,6 +9,8 @@ import { Spacing, Radius, Shadow } from '../../constants/theme';
 interface Props {
   onSend: (text?: string, imageUri?: string, fileName?: string) => void;
 }
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 
 export default function MessageInput({ onSend }: Props) {
   const [text, setText] = useState('');
@@ -31,6 +32,10 @@ export default function MessageInput({ onSend }: Props) {
           const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.8 });
           if (!result.canceled && result.assets.length > 0) {
             const asset = result.assets[0];
+            if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE) {
+              Alert.alert('File too large', 'Please choose an image under 50 MB.');
+              return;
+            }
             onSend(undefined, asset.uri, asset.uri.split('/').pop() ?? 'photo.jpg');
           }
         },
@@ -43,6 +48,10 @@ export default function MessageInput({ onSend }: Props) {
           const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
           if (!result.canceled && result.assets.length > 0) {
             const asset = result.assets[0];
+            if (asset.fileSize && asset.fileSize > MAX_FILE_SIZE) {
+              Alert.alert('File too large', 'Photo exceeds the 50 MB limit.');
+              return;
+            }
             onSend(undefined, asset.uri, asset.uri.split('/').pop() ?? 'photo.jpg');
           }
         },
@@ -79,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 24,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',

@@ -1,13 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import ChatScreen from '../screens/ChatScreen';
-import ContactsScreen from '../screens/ContactsScreen';
 import BookmarksScreen from '../screens/BookmarksScreen';
 import { Colors } from '../constants';
-import { FontFamily } from '../constants/typography';
-import { Spacing } from '../constants/theme';
 import { MainTabParamList } from '../types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -18,20 +15,6 @@ function ChatIcon({ focused }: { focused: boolean }) {
   return (
     <View style={[iconStyles.bubble, focused && iconStyles.bubbleActive]}>
       <View style={[iconStyles.bubbleTail, focused && iconStyles.bubbleTailActive]} />
-    </View>
-  );
-}
-
-function ContactsIcon({ focused }: { focused: boolean }) {
-  const color = focused ? Colors.iconActive : Colors.icon;
-  return (
-    <View style={iconStyles.peopleWrap}>
-      {/* back person */}
-      <View style={[iconStyles.headSm, { backgroundColor: color, right: -4, top: 0 }]} />
-      <View style={[iconStyles.bodySm, { backgroundColor: color, right: -6, bottom: 0 }]} />
-      {/* front person */}
-      <View style={[iconStyles.headMd, { backgroundColor: color }]} />
-      <View style={[iconStyles.bodyMd, { backgroundColor: color }]} />
     </View>
   );
 }
@@ -63,13 +46,6 @@ export default function BottomTabNavigator() {
         component={ChatScreen}
         options={{
           tabBarIcon: ({ focused }) => <ChatIcon focused={focused} />,
-        }}
-      />
-      <Tab.Screen
-        name="Contacts"
-        component={ContactsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => <ContactsIcon focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -125,45 +101,6 @@ const iconStyles = StyleSheet.create({
   },
   bubbleTailActive: {
     borderColor: Colors.iconActive,
-  },
-
-  // Contacts (people) icon
-  peopleWrap: {
-    width: 28,
-    height: 24,
-    position: 'relative',
-  },
-  headSm: {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    top: 1,
-    right: 2,
-  },
-  bodySm: {
-    position: 'absolute',
-    width: 12,
-    height: 8,
-    borderRadius: 4,
-    bottom: 0,
-    right: 0,
-  },
-  headMd: {
-    position: 'absolute',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    top: 0,
-    left: 4,
-  },
-  bodyMd: {
-    position: 'absolute',
-    width: 16,
-    height: 10,
-    borderRadius: 5,
-    bottom: 0,
-    left: 0,
   },
 
   // Book icon

@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
 import Typography, { FontFamily } from '../constants/typography';
@@ -63,8 +63,10 @@ export default function ContactsScreen() {
 
       {/* ── Header ── */}
       <View style={styles.header}>
-        <View style={styles.logoWrap} />
-        <Text style={styles.title}>Contacts</Text>
+        <Pressable style={styles.logoWrap} onPress={() => navigation.goBack()} hitSlop={10}>
+          <Ionicons name="close" size={24} color={Colors.textPrimary} />
+        </Pressable>
+        <Text style={styles.title}>New Message</Text>
         <Pressable style={styles.logoWrap} hitSlop={10}>
           <Ionicons name="person-add-outline" size={22} color={Colors.icon} />
         </Pressable>
