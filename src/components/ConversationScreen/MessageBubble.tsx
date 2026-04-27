@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants';
+import { useTheme } from '../../store/ThemeContext';
 import { FontFamily } from '../../constants/typography';
 import { Message, Contact } from '../../types';
 import { CURRENT_USER_ID } from '../../data/mockData';
@@ -48,6 +49,7 @@ function TickIndicator({ status }: { status?: Message['status'] }) {
 }
 
 export default function MessageBubble({ message, contact }: Props) {
+  const { colors } = useTheme();
   const isMe = message.senderId === CURRENT_USER_ID;
   const timeLabel = formatTime(message.timestamp);
 
@@ -59,7 +61,7 @@ export default function MessageBubble({ message, contact }: Props) {
         <Text style={styles.tsLeft}>{timeLabel}</Text>
         <TickIndicator status={message.status} />
 
-        <View style={styles.bubbleMe}>
+        <View style={[styles.bubbleMe, { backgroundColor: colors.bubbleOutgoing }]}>
           {message.imageUri ? (
             <Image source={{ uri: message.imageUri }} style={styles.image} resizeMode="cover" />
           ) : null}
@@ -70,7 +72,7 @@ export default function MessageBubble({ message, contact }: Props) {
             </View>
           ) : null}
           {message.text ? (
-            <Text style={styles.text}>{message.text}</Text>
+            <Text style={[styles.text, { color: colors.textPrimary }]}>{message.text}</Text>
           ) : null}
         </View>
 
@@ -96,7 +98,7 @@ export default function MessageBubble({ message, contact }: Props) {
         />
       </View>
 
-      <View style={styles.bubbleThem}>
+      <View style={[styles.bubbleThem, { backgroundColor: colors.bubbleIncoming }]}>
         {message.imageUri ? (
           <Image source={{ uri: message.imageUri }} style={styles.image} resizeMode="cover" />
         ) : null}
@@ -107,7 +109,7 @@ export default function MessageBubble({ message, contact }: Props) {
           </View>
         ) : null}
         {message.text ? (
-          <Text style={styles.text}>{message.text}</Text>
+          <Text style={[styles.text, { color: colors.textPrimary }]}>{message.text}</Text>
         ) : null}
       </View>
 

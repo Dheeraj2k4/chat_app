@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
+import { useTheme } from '../store/ThemeContext';
 import Typography, { FontFamily } from '../constants/typography';
 import { Spacing, Radius, Shadow } from '../constants/theme';
 import ChatListItem from '../components/ChatScreen/ChatListItem';
@@ -20,12 +21,14 @@ import { useChatStore } from '../store/ChatContext';
 import { RootStackParamList } from '../types';
 import { CURRENT_USER_ID } from '../data/mockData';
 import SearchBar from '../components/Common/SearchBar';
+import ThemeToggle from '../components/Common/ThemeToggle';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ChatScreen() {
   const navigation = useNavigation<Nav>();
   const { state } = useChatStore();
+  const { colors, isDark } = useTheme();
   const [search, setSearch] = useState('');
 
   const sortedConversations = useMemo(() => {
@@ -48,20 +51,20 @@ export default function ChatScreen() {
   }, [sortedConversations, search, state.contacts]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* ── Header ── */}
       <View style={styles.header}>
         {/* Paper-plane logo */}
         <View style={styles.logoWrap}>
-          <Entypo name="paper-plane" size={28} color={Colors.primary} />
+          <Entypo name="paper-plane" size={28} color={colors.primary} />
         </View>
 
-        <Text style={styles.title}>Chat</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>Chat</Text>
 
-        {/* Spacer to keep title centred */}
-        <View style={styles.logoWrap} />
+        {/* Theme toggle top-right */}
+        <ThemeToggle />
       </View>
 
       {/* ── Search + Gear row ── */}

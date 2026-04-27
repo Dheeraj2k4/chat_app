@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
+import { useTheme } from '../store/ThemeContext';
 import Typography, { FontFamily } from '../constants/typography';
 import { Spacing, Radius } from '../constants/theme';
 import Avatar from '../components/Common/Avatar';
@@ -39,6 +40,7 @@ function groupContacts(contacts: Contact[]): { title: string; data: Contact[] }[
 export default function ContactsScreen() {
   const navigation = useNavigation<Nav>();
   const { state, getOrCreateConversation } = useChatStore();
+  const { colors, isDark } = useTheme();
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
@@ -58,17 +60,17 @@ export default function ContactsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* ── Header ── */}
       <View style={styles.header}>
         <Pressable style={styles.logoWrap} onPress={() => navigation.goBack()} hitSlop={10}>
-          <Ionicons name="close" size={24} color={Colors.textPrimary} />
+          <Ionicons name="close" size={24} color={colors.textPrimary} />
         </Pressable>
-        <Text style={styles.title}>New Message</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>New Message</Text>
         <Pressable style={styles.logoWrap} hitSlop={10}>
-          <Ionicons name="person-add-outline" size={22} color={Colors.icon} />
+          <Ionicons name="person-add-outline" size={22} color={colors.icon} />
         </Pressable>
       </View>
 
@@ -80,7 +82,7 @@ export default function ContactsScreen() {
       {/* ── Online now strip ── */}
       {!search.trim() && (
         <View style={styles.onlineSection}>
-          <Text style={styles.sectionLabel}>Online now</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>Online now</Text>
           <FlatList
             horizontal
             data={state.contacts.filter((c) => c.isOnline)}
@@ -97,7 +99,7 @@ export default function ContactsScreen() {
                   showOnline
                   isOnline
                 />
-                <Text style={styles.onlineName} numberOfLines={1}>
+                <Text style={[styles.onlineName, { color: colors.textPrimary }]} numberOfLines={1}>
                   {item.name.split(' ')[0]}
                 </Text>
               </Pressable>
@@ -114,15 +116,19 @@ export default function ContactsScreen() {
         contentContainerStyle={styles.listContent}
         stickySectionHeadersEnabled={false}
         renderSectionHeader={({ section }) => (
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderText}>{section.title}</Text>
+          <View style={[styles.sectionHeader, { backgroundColor: colors.surface }]}>
+            <Text style={[styles.sectionHeaderText, { color: colors.textSecondary }]}>{section.title}</Text>
           </View>
         )}
         renderItem={({ item }) => (
           <Pressable
-            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+            style={({ pressed }) => [
+              styles.row,
+              { backgroundColor: colors.background },
+              pressed && { backgroundColor: colors.surface },
+            ]}
             onPress={() => handlePress(item)}
-            android_ripple={{ color: Colors.surface }}
+            android_ripple={{ color: colors.surface }}
           >
             <Avatar
               name={item.name}
@@ -133,15 +139,15 @@ export default function ContactsScreen() {
               isOnline={item.isOnline}
             />
             <View style={styles.info}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.status}>
+              <Text style={[styles.name, { color: colors.textPrimary }]}>{item.name}</Text>
+              <Text style={[styles.status, { color: colors.textSecondary }]}>
                 {item.isOnline ? 'Online' : 'Offline'}
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={Colors.border} />
+            <Ionicons name="chevron-forward" size={18} color={colors.border} />
           </Pressable>
         )}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={() => <View style={[styles.separator, { backgroundColor: colors.border }]} />}
       />
     </SafeAreaView>
   );

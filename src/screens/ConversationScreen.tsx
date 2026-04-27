@@ -15,6 +15,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
+import { useTheme } from '../store/ThemeContext';
 import Typography, { FontFamily } from '../constants/typography';
 import { Spacing } from '../constants/theme';
 import Avatar from '../components/Common/Avatar';
@@ -30,6 +31,7 @@ export default function ConversationScreen() {
   const route = useRoute<ConvRoute>();
   const { conversationId, contactId } = route.params;
   const { state, sendMessage, markRead, toggleBookmark, isBookmarked } = useChatStore();
+  const { colors, isDark } = useTheme();
   const flatListRef = useRef<FlatList<Message>>(null);
 
   const contact = state.contacts.find((c) => c.id === contactId);
@@ -60,13 +62,13 @@ export default function ConversationScreen() {
 
   return (
     // SafeAreaView only handles top; bottom is handled by KeyboardAvoidingView + input
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* ── Header ── */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
         <Pressable style={styles.backBtn} onPress={() => navigation.goBack()} hitSlop={10}>
-          <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
+          <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
         </Pressable>
 
         <View style={styles.headerCenter}>
@@ -77,7 +79,7 @@ export default function ConversationScreen() {
             size={36}
             ringColor={Colors.accent}
           />
-          <Text style={styles.headerName} numberOfLines={1}>
+          <Text style={[styles.headerName, { color: colors.textPrimary }]} numberOfLines={1}>
             {contact.name}
           </Text>
         </View>
@@ -91,21 +93,21 @@ export default function ConversationScreen() {
             <Ionicons
               name={isBookmarked(conversationId) ? 'bookmark' : 'bookmark-outline'}
               size={22}
-              color={isBookmarked(conversationId) ? Colors.primary : Colors.textPrimary}
+              color={isBookmarked(conversationId) ? Colors.primary : colors.textPrimary}
             />
           </Pressable>
           <Pressable hitSlop={10} style={styles.actionBtn}>
-            <Ionicons name="mic-outline" size={22} color={Colors.textPrimary} />
+            <Ionicons name="mic-outline" size={22} color={colors.textPrimary} />
           </Pressable>
           <Pressable hitSlop={10} style={styles.actionBtn}>
-            <Ionicons name="videocam-outline" size={22} color={Colors.textPrimary} />
+            <Ionicons name="videocam-outline" size={22} color={colors.textPrimary} />
           </Pressable>
         </View>
       </View>
 
       {/* ── Keyboard-aware body ── */}
       <KeyboardAvoidingView
-        style={styles.flex}
+        style={[styles.flex, { backgroundColor: colors.background }]}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
       >

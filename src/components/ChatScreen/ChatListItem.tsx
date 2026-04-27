@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Colors } from '../../constants';
+import { useTheme } from '../../store/ThemeContext';
 import Typography, { FontFamily } from '../../constants/typography';
 import { Spacing } from '../../constants/theme';
 import { Contact, Message } from '../../types';
@@ -37,6 +38,7 @@ export default function ChatListItem({
   unreadCount,
   onPress,
 }: ChatListItemProps) {
+  const { colors } = useTheme();
   const isUnread = unreadCount > 0;
 
   const preview = lastMessage?.imageUri
@@ -50,9 +52,13 @@ export default function ChatListItem({
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.container,
+        { backgroundColor: colors.background },
+        pressed && { backgroundColor: colors.surface },
+      ]}
       onPress={onPress}
-      android_ripple={{ color: Colors.surface }}
+      android_ripple={{ color: colors.surface }}
     >
       {/* Avatar with coral ring when unread */}
       <Avatar
@@ -67,18 +73,18 @@ export default function ChatListItem({
       {/* Text body */}
       <View style={styles.body}>
         <View style={styles.topRow}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={[styles.name, { color: colors.textPrimary }]} numberOfLines={1}>
             {contact.name}
           </Text>
           {lastMessage && (
-            <Text style={[styles.time, isUnread && styles.timeUnread]}>
+            <Text style={[styles.time, isUnread && styles.timeUnread, { color: colors.textMuted }]}>
               {formatTime(lastMessage.timestamp)}
             </Text>
           )}
         </View>
 
         <Text
-          style={[styles.preview, isUnread && styles.previewUnread]}
+          style={[styles.preview, isUnread && styles.previewUnread, { color: colors.textSecondary }]}
           numberOfLines={1}
         >
           {isLastMine ? `You: ${preview}` : preview}

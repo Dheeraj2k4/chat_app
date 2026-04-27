@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
+import { useTheme } from '../store/ThemeContext';
 import Typography, { FontFamily } from '../constants/typography';
 import { Spacing, Radius, Shadow } from '../constants/theme';
 import Avatar from '../components/Common/Avatar';
@@ -36,6 +37,7 @@ function formatTime(ts: number): string {
 export default function BookmarksScreen() {
   const navigation = useNavigation<Nav>();
   const { state, toggleBookmark, isBookmarked } = useChatStore();
+  const { colors, isDark } = useTheme();
 
   const bookmarked = state.conversations.filter((c) =>
     isBookmarked(c.id)
@@ -43,19 +45,19 @@ export default function BookmarksScreen() {
 
   if (bookmarked.length === 0) {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+      <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
         <View style={styles.header}>
           <View style={styles.spacer} />
-          <Text style={styles.title}>Bookmarks</Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Bookmarks</Text>
           <View style={styles.spacer} />
         </View>
         <View style={styles.empty}>
-          <View style={styles.emptyIcon}>
-            <Ionicons name="bookmark-outline" size={48} color={Colors.border} />
+          <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}>
+            <Ionicons name="bookmark-outline" size={48} color={colors.border} />
           </View>
-          <Text style={styles.emptyTitle}>No bookmarks yet</Text>
-          <Text style={styles.emptySub}>
+          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No bookmarks yet</Text>
+          <Text style={[styles.emptySub, { color: colors.textSecondary }]}>
             Open a chat and tap the bookmark icon to save it here.
           </Text>
         </View>
@@ -64,13 +66,13 @@ export default function BookmarksScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]} edges={['top']}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
 
       {/* ── Header ── */}
       <View style={styles.header}>
         <View style={styles.spacer} />
-        <Text style={styles.title}>Bookmarks</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>Bookmarks</Text>
         <View style={styles.spacer} />
       </View>
 
@@ -100,10 +102,10 @@ export default function BookmarksScreen() {
                   contactId: item.contactId,
                 })
               }
-              android_ripple={{ color: Colors.surface }}
+              android_ripple={{ color: colors.surface }}
             >
               {/* Card */}
-              <View style={styles.card}>
+              <View style={[styles.card, { backgroundColor: colors.surface }]}>
                 <View style={styles.cardTop}>
                   <Avatar
                     name={contact.name}
@@ -115,16 +117,16 @@ export default function BookmarksScreen() {
                   />
                   <View style={styles.cardBody}>
                     <View style={styles.cardTopRow}>
-                      <Text style={styles.name} numberOfLines={1}>
+                      <Text style={[styles.name, { color: colors.textPrimary }]} numberOfLines={1}>
                         {contact.name}
                       </Text>
                       {lastMsg && (
-                        <Text style={styles.time}>
+                        <Text style={[styles.time, { color: colors.textMuted }]}>
                           {formatTime(lastMsg.timestamp)}
                         </Text>
                       )}
                     </View>
-                    <Text style={styles.preview} numberOfLines={2}>
+                    <Text style={[styles.preview, { color: colors.textSecondary }]} numberOfLines={2}>
                       {isLastMine ? `You: ${preview}` : preview}
                     </Text>
                   </View>

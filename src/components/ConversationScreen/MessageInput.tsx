@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, Pressable, Alert, Platform } from 'react-n
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { Colors } from '../../constants';
+import { useTheme } from '../../store/ThemeContext';
 import { FontFamily, FontSize } from '../../constants/typography';
 import { Spacing, Radius, Shadow } from '../../constants/theme';
 
@@ -13,6 +14,7 @@ interface Props {
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 
 export default function MessageInput({ onSend }: Props) {
+  const { colors } = useTheme();
   const [text, setText] = useState('');
 
   const handleSend = () => {
@@ -63,13 +65,13 @@ export default function MessageInput({ onSend }: Props) {
   const canSend = text.trim().length > 0;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.surface, color: colors.textPrimary }]}
         value={text}
         onChangeText={setText}
         placeholder="Message..."
-        placeholderTextColor={Colors.textMuted}
+        placeholderTextColor={colors.textMuted}
         multiline
         maxLength={2000}
       />

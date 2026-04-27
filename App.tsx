@@ -12,6 +12,7 @@ import {
 } from '@expo-google-fonts/poppins';
 
 import { ChatProvider } from './src/store/ChatContext';
+import { ThemeProvider } from './src/store/ThemeContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import { Colors } from './src/constants';
 
@@ -33,12 +34,14 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ChatProvider>
-        <NavigationContainer>
-          <StatusBar style="dark" backgroundColor={Colors.white} />
-          <RootNavigator />
-        </NavigationContainer>
-      </ChatProvider>
+      <ThemeProvider>
+        <ChatProvider>
+          <NavigationContainer>
+            <StatusBar style="auto" />
+            <RootNavigator />
+          </NavigationContainer>
+        </ChatProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
