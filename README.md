@@ -11,7 +11,16 @@ A frontend-only React Native chat messaging app built with Expo, inspired by mod
 
 ---
 
-## Tech Stack
+## Demo
+
+▶ [Watch demo video](WhatsApp%20Video%202026-04-27%20at%208.32.23%20PM.mp4)
+
+> **Tip:** To embed the video directly on GitHub, open a new issue or PR, drag-and-drop the `.mp4` file into the comment box, copy the generated `https://github.com/user-attachments/...` URL, then replace the link above with:
+> ```
+> ![Demo](https://github.com/user-attachments/assets/<your-id>.mp4)
+> ```
+
+---
 
 | Layer | Library |
 |---|---|
