@@ -79,6 +79,18 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       };
     }
 
+    case 'TOGGLE_BOOKMARK': {
+      const { conversationId } = action.payload;
+      const ids = state.bookmarkedConversationIds;
+      const already = ids.includes(conversationId);
+      return {
+        ...state,
+        bookmarkedConversationIds: already
+          ? ids.filter((id) => id !== conversationId)
+          : [...ids, conversationId],
+      };
+    }
+
     default:
       return state;
   }
@@ -96,6 +108,8 @@ interface ChatContextValue {
     fileName?: string
   ) => void;
   markRead: (conversationId: string) => void;
+  toggleBookmark: (conversationId: string) => void;
+  isBookmarked: (conversationId: string) => boolean;
   getConversationByContact: (contactId: string) => Conversation | undefined;
   getOrCreateConversation: (contactId: string) => Conversation;
 }
@@ -108,6 +122,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(chatReducer, {
     contacts: CONTACTS,
     conversations: INITIAL_CONVERSATIONS,
+    bookmarkedConversationIds: [],
   });
 
   // Load persisted state on mount
@@ -123,6 +138,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
               payload: {
                 contacts: CONTACTS,
                 conversations: saved.conversations,
+                bookmarkedConversationIds: saved.bookmarkedConversationIds ?? [],
               },
             });
           }
@@ -133,13 +149,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  // Persist conversations whenever they change
+  // Persist conversations + bookmarks whenever they change
   useEffect(() => {
     AsyncStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ conversations: state.conversations })
+      JSON.stringify({
+        conversations: state.conversations,
+        bookmarkedConversationIds: state.bookmarkedConversationIds,
+      })
     ).catch(() => {});
-  }, [state.conversations]);
+  }, [state.conversations, state.bookmarkedConversationIds]);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -179,6 +198,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'MARK_READ', payload: { conversationId } });
   }, []);
 
+  const toggleBookmark = useCallback((conversationId: string) => {
+    dispatch({ type: 'TOGGLE_BOOKMARK', payload: { conversationId } });
+  }, []);
+
+  const isBookmarked = useCallback(
+    (conversationId: string) =>
+      state.bookmarkedConversationIds.includes(conversationId),
+    [state.bookmarkedConversationIds]
+  );
+
   const getConversationByContact = useCallback(
     (contactId: string) =>
       state.conversations.find((c) => c.contactId === contactId),
@@ -200,6 +229,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         payload: {
           contacts: state.contacts,
           conversations: [...state.conversations, newConv],
+          bookmarkedConversationIds: state.bookmarkedConversationIds,
         },
       });
       return newConv;
@@ -214,6 +244,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         dispatch,
         sendMessage,
         markRead,
+        toggleBookmark,
+        isBookmarked,
         getConversationByContact,
         getOrCreateConversation,
       }}

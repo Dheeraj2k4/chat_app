@@ -27,6 +27,7 @@ export interface Conversation {
 export interface ChatState {
   contacts: Contact[];
   conversations: Conversation[];
+  bookmarkedConversationIds: string[];
 }
 
 export type ChatAction =
@@ -42,7 +43,8 @@ export type ChatAction =
   | {
       type: 'SIMULATE_REPLY';
       payload: { conversationId: string; contactId: string };
-    };
+    }
+  | { type: 'TOGGLE_BOOKMARK'; payload: { conversationId: string } };
 
 export type RootStackParamList = {
   MainTabs: undefined;

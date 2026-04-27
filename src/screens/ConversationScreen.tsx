@@ -27,7 +27,7 @@ export default function ConversationScreen() {
   const navigation = useNavigation();
   const route = useRoute<ConvRoute>();
   const { conversationId, contactId } = route.params;
-  const { state, sendMessage, markRead } = useChatStore();
+  const { state, sendMessage, markRead, toggleBookmark, isBookmarked } = useChatStore();
   const flatListRef = useRef<FlatList<Message>>(null);
 
   const contact = state.contacts.find((c) => c.id === contactId);
@@ -83,6 +83,17 @@ export default function ConversationScreen() {
 
         {/* Action icons */}
         <View style={styles.headerActions}>
+          <Pressable
+            hitSlop={10}
+            style={styles.actionBtn}
+            onPress={() => toggleBookmark(conversationId)}
+          >
+            <Ionicons
+              name={isBookmarked(conversationId) ? 'bookmark' : 'bookmark-outline'}
+              size={22}
+              color={isBookmarked(conversationId) ? Colors.primary : Colors.textPrimary}
+            />
+          </Pressable>
           <Pressable hitSlop={10} style={styles.actionBtn}>
             <Ionicons name="mic-outline" size={22} color={Colors.textPrimary} />
           </Pressable>
